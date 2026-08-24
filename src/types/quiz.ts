@@ -12,6 +12,8 @@ export type QuizLeadAnswers = {
   q11_main_problem: string;
 };
 
+export type CommercialPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY_HIGH';
+
 export type QuizLead = {
   id?: string;
   first_name: string;
@@ -23,5 +25,6 @@ export type QuizLead = {
   setting_maturity_label: string;
   top_3_weaknesses: string[];
   commercial_maturity?: number | null;
+  commercial_priority?: CommercialPriority | null;
   created_at?: string;
 };

@@ -2,28 +2,37 @@ import { supabase } from '@/lib/supabase';
 import { QuizLead } from '@/types/quiz';
 
 /**
- * Saves a completed quiz lead into the Supabase database
+ * Enregistre un lead qualifié avec ses métriques dans la table Supabase quiz_leads
  */
 export async function saveQuizLead(leadData: QuizLead) {
+  const insertPayload: Record<string, unknown> = {
+    first_name: leadData.first_name,
+    email: leadData.email,
+    phone: leadData.phone,
+    answers: leadData.answers,
+    setting_maturity_score: leadData.setting_maturity_score,
+    setting_maturity_level: leadData.setting_maturity_level,
+    setting_maturity_label: leadData.setting_maturity_label,
+    top_3_weaknesses: leadData.top_3_weaknesses,
+    commercial_maturity: leadData.commercial_maturity ?? null,
+  };
+
+  // Ajout du champ optionnel commercial_priority s'il est présent
+  if (leadData.commercial_priority) {
+    insertPayload.commercial_priority = leadData.commercial_priority;
+  }
+
   const { data, error } = await supabase
     .from('quiz_leads')
-    .insert([
-      {
-        first_name: leadData.first_name,
-        email: leadData.email,
-        phone: leadData.phone,
-        answers: leadData.answers,
-        setting_maturity_score: leadData.setting_maturity_score,
-        setting_maturity_level: leadData.setting_maturity_level,
-        setting_maturity_label: leadData.setting_maturity_label,
-        top_3_weaknesses: leadData.top_3_weaknesses,
-        commercial_maturity: leadData.commercial_maturity ?? null,
-      },
-    ])
-    .select('id');
+    .insert([insertPayload]);
 
   if (error) {
-    console.error('Error saving quiz lead to Supabase:', error);
+    console.error('Détails erreur Supabase:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+    });
     throw error;
   }
 
