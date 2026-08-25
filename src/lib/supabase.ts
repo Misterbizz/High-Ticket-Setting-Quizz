@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey =
@@ -7,10 +7,26 @@ const supabaseKey =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
   '';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn(
-    'Supabase URL or Key missing. Check your environment variables in .env.local.'
-  );
+let supabaseClient: SupabaseClient | null = null;
+
+export function getSupabaseClient(): SupabaseClient | null {
+  if (supabaseClient) return supabaseClient;
+
+  if (!supabaseUrl || !supabaseKey) {
+    if (typeof window !== 'undefined') {
+      console.warn(
+        'Supabase URL or Key missing. Check your environment variables in Vercel or .env.local.'
+      );
+    }
+    return null;
+  }
+
+  supabaseClient = createClient(supabaseUrl, supabaseKey);
+  return supabaseClient;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Export pour compatibilité descendante avec fallback factice si clés manquantes
+export const supabase =
+  supabaseUrl && supabaseKey
+    ? createClient(supabaseUrl, supabaseKey)
+    : (null as unknown as SupabaseClient);

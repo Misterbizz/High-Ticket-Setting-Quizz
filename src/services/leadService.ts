@@ -1,10 +1,19 @@
-import { supabase } from '@/lib/supabase';
+import { getSupabaseClient } from '@/lib/supabase';
 import { QuizLead } from '@/types/quiz';
 
 /**
  * Enregistre un lead qualifié avec ses métriques dans la table Supabase quiz_leads
  */
 export async function saveQuizLead(leadData: QuizLead) {
+  const supabase = getSupabaseClient();
+
+  if (!supabase) {
+    console.warn(
+      'Supabase client non initialisé (variables d’environnement manquantes). Le lead n’a pas été enregistré dans la base distante.'
+    );
+    return null;
+  }
+
   const insertPayload: Record<string, unknown> = {
     first_name: leadData.first_name,
     email: leadData.email,
