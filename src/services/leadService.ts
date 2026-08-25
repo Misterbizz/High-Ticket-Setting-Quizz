@@ -7,13 +7,6 @@ import { QuizLead } from '@/types/quiz';
 export async function saveQuizLead(leadData: QuizLead) {
   const supabase = getSupabaseClient();
 
-  if (!supabase) {
-    console.warn(
-      'Supabase client non initialisé (variables d’environnement manquantes). Le lead n’a pas été enregistré dans la base distante.'
-    );
-    return null;
-  }
-
   const insertPayload: Record<string, unknown> = {
     first_name: leadData.first_name,
     email: leadData.email,
